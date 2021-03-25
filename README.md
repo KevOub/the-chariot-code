@@ -13,7 +13,6 @@ NAMEOFPROGRAMMER:
           /.
           /..
           /*.py
-          /README.md # explains what the program does and any tricks for quick understanding
 ```
 
 Then, notes go in the "notes" directory
