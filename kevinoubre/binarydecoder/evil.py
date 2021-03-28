@@ -1,0 +1,2 @@
+# import sys;bintoascii = lambda li, x : "".join([chr(int(val,2)) for val in [li[i:i+(8 if len(li) % 8 == 0 else 7)] for i in range(0,len(li),8 if len(li) % 8 == 0 else 7)] if val != "\n"]);print(bintoascii(sys.stdin.read(),8))
+import sys;bintoascii = lambda li, x : "".join([chr(int(val,2)) for val in [li[i:i+(8 if len(li) % 8 == 0 else 7)] for i in range(0,len(li),8 if len(li) % 8 == 0 else 7)]]);print(bintoascii(sys.stdin.read().strip("\n"),8))
