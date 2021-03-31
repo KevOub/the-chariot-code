@@ -1,11 +1,12 @@
 from ftplib import FTP
 
 # FTP server details
-IP = "192.168.122.8"
+# IP = "192.168.122.8"
+IP = "138.47.102.120"
 PORT = 21
 USER = "anonymous"
 PASSWORD = ""
-FOLDER = "/7/"
+FOLDER = "/10/"
 USE_PASSIVE = True # set to False if the connection times out
 
 # connect and login to the FTP server
@@ -41,9 +42,9 @@ def handlePermissions(permissions):
     output = ""
     data = 0
     for p in splitPermissions:
-        data += 4 if p[2] == "1" else 0
+        data += 4 if p[0] == "1" else 0
         data += 2 if p[1] == "1" else 0
-        data += 1 if p[0] == "1" else 0
+        data += 1 if p[2] == "1" else 0
         output += str(data)
         data = 0
     return output[::-1]
@@ -63,9 +64,7 @@ def encodeMessage(message):
 
     # binaryMessage = [f"{ord(m):010b}" for m in message]
     binaryMessage = [f"{ord(m):010b}" for m in message]
-    print(binaryMessage)
-    for rune in binaryMessage:
-        print("---")
+    for counter,rune in enumerate(binaryMessage):
         # if the first bit is 1, it is directory time
         if rune[0] == "1":
             # os.system(mkdir $FILE)
@@ -77,10 +76,11 @@ def encodeMessage(message):
             # test = handlePermissions(rune[1:])
             # print(test)
             # print("touch FILE")
-            print(rune[1:])
-            print(chr(int(rune[1:],2)))
-
-            print("chmod {} FILE".format(handlePermissions(rune[1:])))
+            # print(rune[1:])
+            # print(chr(int(rune[1:],2)))
+            # print("")
+            print("touch FILE{}".format(counter))
+            print("chmod {} FILE{}".format(handlePermissions(rune[1:]),counter))
 
 
 def binaryToAsciiChar(l):
@@ -91,21 +91,23 @@ def binaryToAsciiChar(l):
 def decodeMessageToBinary(perms):
     output = ""
     validChars = ["r","w","x"]        
+    print(perms[0])
     for index,perm in enumerate(perms):
         if MODE == 7:
-            pass
+            if index >= 2:
+                print("")
         if MODE == 10:
             # print("LOUD: {}".format(perm))
             binPerm = "".join(["1" if p in validChars else "0" for p in perm]) 
             print(binPerm)
             # runePermission = chr(int("0b"+binPerm,2))
             runePermission = ""
-            print(int(binPerm,2))
+            print(chr(int(binPerm,2)))
             output += runePermission
     
     return output
 
-encodeMessage("A")
-print("~~~")
-print(decodeMessageToBinary(justperms))
+# encodeMessage("Hello Governor")
+# print("~~~")
+# print(decodeMessageToBinary(justperms))
 
