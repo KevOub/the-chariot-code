@@ -62,4 +62,41 @@ mess = "Encode this please"
 encodeMessage(mess)
 # print(handlePermissions("1110100"))
 print("!!!\n")
-decodeMessage("/home/kevin/programming/the-chariot-code/kevinoubre/binarydecoder")
+
+# takes blob of data and returns corresponding rwx. basis for encoding, if ever necessary
+def handlePermissions(permissions):
+    splitPermissions = divideIntoNBits(permissions,3)
+    output = ""
+    data = 0
+    for p in splitPermissions:
+        data += 4 if p[0] == "1" else 0
+        data += 2 if p[1] == "1" else 0
+        data += 1 if p[2] == "1" else 0
+        output += str(data)
+        data = 0
+    return output[::-1]
+
+def encodeMessage(message):
+    # numberMessage = [ for m in message]
+
+    # binaryMessage = [f"{ord(m):010b}" for m in message]
+    binaryMessage = [f"{ord(m):010b}" for m in message]
+    for counter,rune in enumerate(binaryMessage):
+        # if the first bit is 1, it is directory time
+        if rune[0] == "1":
+            # os.system(mkdir $FILE)
+            # chmod but with magics
+            # print("mkdir FILE")
+            print("chmod {}".format(handlePermissions(rune[1:])))
+        else:
+            # os.system(touch $FILE)
+            # test = handlePermissions(rune[1:])
+            # print(test)
+            # print("touch FILE")
+            # print(rune[1:])
+            # print(chr(int(rune[1:],2)))
+            # print("")
+            print("touch FILE{}".format(counter))
+            print("chmod {} FILE{}".format(handlePermissions(rune[1:]),counter))
+
+

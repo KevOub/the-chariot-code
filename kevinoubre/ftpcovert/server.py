@@ -6,108 +6,104 @@ IP = "138.47.102.120"
 PORT = 21
 USER = "anonymous"
 PASSWORD = ""
-FOLDER = "/10/"
+FOLDER = "/7/"
+MODE=7
 USE_PASSIVE = True # set to False if the connection times out
+REMOTE = False
 
-# connect and login to the FTP server
-ftp = FTP()
-ftp.connect(IP, PORT)
-ftp.login(USER, PASSWORD)
-ftp.set_pasv(USE_PASSIVE)
+if REMOTE:
+        
+    # connect and login to the FTP server
+    ftp = FTP()
+    ftp.connect(IP, PORT)
+    ftp.login(USER, PASSWORD)
+    ftp.set_pasv(USE_PASSIVE)
 
-# navigate to the specified directory and list files
-ftp.cwd(FOLDER)
-files = []
-ftp.dir(files.append)
+    # navigate to the specified directory and list files
+    ftp.cwd(FOLDER)
+    files = []
+    ftp.dir(files.append)
 
-# exit the FTP server
-ftp.quit()
+    # exit the FTP server
+    ftp.quit()
 
-data = []
-justperms = []
-print("FILES:")
-# display the folder contents
-for f in files:
-    print(f)
-    data.append(f)
-    justperms.append(f[:10])
+    data = []
+    justperms = []
+    print("FILES:")
+    # display the folder contents
+    for f in files:
+        print(f)
+        data.append(f)
+        justperms.append(f[:10])
 
+else:
+    # used for remote testing 
+    if MODE==7:
+        files = open('ftp7')
+    else:
+        files = open('ftp10')
+    
+    lines = files.readlines()
+    data = []
+    for f in lines:
+        # print(f.rstrip("\n"))
+        data.append(f.rstrip("\n"))
 
+# Converts the permissions from the ftp server to binary data
+def permToBin(permissions):
+    validChars = ["r","w","x"]        
+    if MODE == 10:
+        # if it is mode 10, include d in chars
+        validChars.append("d")
+        # Then, create a string where dashes are 0 and vice versa
+        return "".join(["1" if p in validChars else "0" for p in permissions])
+    if MODE == 7:
+        # if any characters are not --- in the first 3 bits, break
+        # Could this be better? Yes
+        if any([True for p in permissions[:3]  if p in validChars]):
+            return "0"
+        
+        # otherwise, convert to binary:
+        else:
+            return "".join(["1" if p in validChars else "0" for p in permissions[3:]])
 
-MODE=10
-
-# takes blob of data and returns corresponding rwx
-def handlePermissions(permissions):
-    splitPermissions = divideIntoNBits(permissions,3)
-    output = ""
-    data = 0
-    for p in splitPermissions:
-        data += 4 if p[0] == "1" else 0
-        data += 2 if p[1] == "1" else 0
-        data += 1 if p[2] == "1" else 0
-        output += str(data)
-        data = 0
-    return output[::-1]
-
-
-
-
-# Yield list of bytes (n-bits long) borrowed from bindecoder
+# Yield list of bytes (n-bits long)
 def divideIntoNBits(l, n): 
     # looping till length l 
     for i in range(0, len(l), n):  
         yield l[i:i + n] 
   
-
-def encodeMessage(message):
-    # numberMessage = [ for m in message]
-
-    # binaryMessage = [f"{ord(m):010b}" for m in message]
-    binaryMessage = [f"{ord(m):010b}" for m in message]
-    for counter,rune in enumerate(binaryMessage):
-        # if the first bit is 1, it is directory time
-        if rune[0] == "1":
-            # os.system(mkdir $FILE)
-            # chmod but with magics
-            # print("mkdir FILE")
-            print("chmod {}".format(handlePermissions(rune[1:])))
-        else:
-            # os.system(touch $FILE)
-            # test = handlePermissions(rune[1:])
-            # print(test)
-            # print("touch FILE")
-            # print(rune[1:])
-            # print(chr(int(rune[1:],2)))
-            # print("")
-            print("touch FILE{}".format(counter))
-            print("chmod {} FILE{}".format(handlePermissions(rune[1:]),counter))
-
-
+# Turns binary data to ascii through ITERABLES
 def binaryToAsciiChar(l):
     for val in l:
         yield chr(int(val,2))
 
-# takes the array justperms and iterates through them to create the message back 
-def decodeMessageToBinary(perms):
+
+# mode 7 decoding
+def decode7(perms):
     output = ""
-    validChars = ["r","w","x"]        
-    print(perms[0])
-    for index,perm in enumerate(perms):
-        if MODE == 7:
-            if index >= 2:
-                print("")
-        if MODE == 10:
-            # print("LOUD: {}".format(perm))
-            binPerm = "".join(["1" if p in validChars else "0" for p in perm]) 
-            print(binPerm)
-            # runePermission = chr(int("0b"+binPerm,2))
-            runePermission = ""
-            print(chr(int(binPerm,2)))
-            output += runePermission
+    for p in perms:
+        # get the 7 bits and fill out to 8 bits
+        binData = permToBin(p[:10]).zfill(8)
+        # add the corresponding char to the output
+        output += chr(int(binData,2))
+    # return it to match the style of the other decode
+    return output
     
+# mode 10 decoding
+def decode10(perms):
+    # create long binary string from permissions
+    data = "".join([permToBin(p[:10]) for p in perms])
+    # borrowed code from binary decoder
+    bitsSeven = list(divideIntoNBits(data,7))
+    output = "".join(list(binaryToAsciiChar(bitsSeven)))
     return output
 
-# encodeMessage("Hello Governor")
-# print("~~~")
-# print(decodeMessageToBinary(justperms))
+       
 
+
+if MODE == 7:
+    print(decode7(data))
+if MODE == 10:
+    print(decode10(data))
+    
