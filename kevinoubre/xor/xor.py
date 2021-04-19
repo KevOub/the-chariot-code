@@ -5,7 +5,7 @@ import sys
     # Read the whole file at once
     # cipher = binary_file.read()
 cipher = sys.stdin.buffer.read()
-with open("key2", "rb") as binary_file:
+with open("key", "rb") as binary_file:
     # Read the whole file at once
     key = binary_file.read()
 
@@ -13,6 +13,7 @@ with open("key2", "rb") as binary_file:
 
 xorHex = lambda a, b : hex((int(a) ^ int(b))) 
 xorString = lambda a, b : str(int(a) ^ int(b))
+xorBest = lambda a, b : (int(a) ^ int(b))
 
 
 def bitstreamOfData(stringdata):
@@ -23,15 +24,14 @@ def bitstreamOfData(stringdata):
 
 
 xorDataHex = "".join(list(map(lambda x : xorHex(x[0],x[1])[2:],zip(cipher,key))))
-xorDatTest = "".join(list(map(lambda x : xorString(x[0],x[1]),zip(bitstreamOfData(cipher),bitstreamOfData(key)))))
+xorDatTest = bytes(map(lambda x : xorBest(x[0],x[1]),zip(cipher,key)))
 
-xorDataString = "".join(list(map(lambda x : xorDataHex(x[0],x[1])[2:],zip(cipher,key))))
+# xorDataString = "".join(list(map(lambda x : xorDataHex(x[0],x[1])[2:],zip(cipher,key))))
 
 
 # print(xorDataString)
 # print(xorDataHex)
-# sys.stdout.buffer.write(xorDataHex.encode())
-print(xorDatTest)
+sys.stdout.buffer.write(xorDatTest)
 
 # print(list(bitstreamOfData(cipher)))
 

@@ -1,0 +1,6 @@
+
+identify image_with_error.png &> /dev/null; echo $?
+
+for i in $(seq 0 1000); do for j in $(seq 0 1000); do echo $i $j; done; done
+
+go with parralel execution vs tmux panes split for lots of code running
