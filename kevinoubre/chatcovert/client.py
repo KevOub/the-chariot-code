@@ -39,7 +39,8 @@ while (data.rstrip("\n") != "EOF"):
     if DEBUG:
         sys.stdout.write(" D: {}\n".format(delta))
         sys.stdout.flush()
-    if (delta >=     ONE):
+    # covert_bin = "1" if delta >= ONE else "0"
+    if (delta >= ONE):
         covert_bin += "1"
     else:
         covert_bin += "0"
@@ -50,8 +51,8 @@ s.close()
 # print("\nCOVERT:\t")
 # print(covert_bin)
 
-bitsSeven = list(divideIntoNBits(covert_bin,8))
-output = "".join(list(binaryToAsciiChar(bitsSeven)))
+bits = list(divideIntoNBits(covert_bin,8))
+output = "".join(list(binaryToAsciiChar(bits)))
 
 print("MESSAGE:\t")
 print(output)
