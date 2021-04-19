@@ -4,6 +4,7 @@ from binascii import hexlify
 
 ONE =  0.1
 ZERO = 0.025
+DEBUG = True
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 port = 1337
@@ -33,7 +34,8 @@ n = 0
 for i in msg:
     c.send(i.encode())
     if n < len(covert_bin):
-            
+        if DEBUG:
+            print("DATA:\t",covert_bin[n]) 
         if covert_bin[n] == "1":
             time.sleep(ONE)
         else:
@@ -41,6 +43,9 @@ for i in msg:
         n = (n+1)
     else:
         time.sleep(ZERO)
+    
+    if DEBUG and n % 8 == 0:
+        print("\n   ")
 
 
 c.send("EOF".encode())
