@@ -3,7 +3,7 @@ import os
 import sys
 from math import floor
 
-SENTINEL = [0x0,0xff,0x0,0xff,0x0]
+SENTINEL = [0x0,0xff,0x0,0x0,0xff,0x0]
 
 
 """ 
@@ -118,7 +118,7 @@ class Steg():
                 while (i < len(self.hidden)):
                     self.wrapper[poker]
                     poker += self.interval
-                    i   += 1
+                    i += 1
             
                 i = 0
                 # while (i < len(SENTINEL) ):
@@ -134,6 +134,7 @@ class Steg():
                 while (poker < len(self.wrapper)):
                     b = self.wrapper[poker]  
                     if b in SENTINEL:
+                        output.append(b)
                         if b == SENTINEL[thestopcounter]:
                             thestopcounter+=1
                         else:

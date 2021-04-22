@@ -39,14 +39,12 @@ while (data.rstrip("\n") != "EOF"):
     t1 = time()
     delta = round(t1-t0,3)
 
-    deltastream.append(delta)
+    deltastream.append(str(delta)+"\n")
     if DEBUG:
         sys.stdout.write(" D: {}\n".format(delta))
         sys.stdout.flush()
-    
-
-    sys.stdout.write(max(deltastream))
-    sys.stdout.write(min(deltastream))
+        
+    sys.stdout.write("0 = {} 1 = {}\r".format(max(deltastream),min(deltastream)))
     sys.stdout.flush()
 
 s.close()

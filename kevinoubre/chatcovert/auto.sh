@@ -12,9 +12,11 @@ tmux split-window -h
 tmux select-pane -t 1
 tmux send-keys  "clear" C-m
 
-# tmux send-keys  "python3 solver.py | tee /dev/tty | tee output | xclip -i -selection clipboard" C-m
+tmux send-keys  "bash -c 'python3 solver.py' | tee /dev/tty | tee output | xclip -i -selection clipboard" C-m
 
-tmux send-keys  "python3 client.py | tee /dev/tty | tee output | xclip -i -selection clipboard" C-m
+tmux send-keys  "sleep 10" C-m
+
+# tmux send-keys  "python3 client.py | tee /dev/tty | tee output | xclip -i -selection clipboard" C-m
 
 tmux send-keys "tmux kill-session -t $session" C-m
 
