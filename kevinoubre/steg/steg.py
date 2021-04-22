@@ -78,7 +78,7 @@ class Steg():
             if val[1] == "s" or val[1] == "R":
                 self.srmode = True if val[1] == "s" else False
             if val[1] == "b" or val[1] == "B":
-                self.srmode = True if val[1] == "b" else False
+                self.bbmode = True if val[1] == "b" else False
             
             if val[1] == "o":
                 self.offset = int(val[2:])
@@ -110,12 +110,8 @@ class Steg():
         
         # checks for bit mode
         if not self.bbmode:
-            # INTERVAL = floor((len(self.wrapperName) - self.offset) / (len(self.hidden) + len(SENTINEL)) )
-            self.interval = INTERVAL if self.interval == 0 else self.interval
-
-            # store mode
+            # STORE
             if self.srmode:
-
                 i = 0
                 # the offset, which changes
                 poker = self.offset
@@ -125,40 +121,78 @@ class Steg():
                     i   += 1
             
                 i = 0
-                while (i < SENTINEL):
-                    self.wrapper[poker] = SENTINEL[i]
-                    poker += 1
-                    i += 1
+                # while (i < len(SENTINEL) ):
+                    # self.wrapper[poker] = SENTINEL[i]
+                    # poker += 1
+                    # i += 1
 
-            # EXTRACTION
+            # RETRIEVE
             else:
                 poker = self.offset
                 output = []
                 thestopcounter = 0
                 while (poker < len(self.wrapper)):
                     b = self.wrapper[poker]  
-                    if (b in SENTINEL):
-                        print(b)     
-                    if(b in SENTINEL and thestopcounter == 0):
-                        thestopcounter += 1
-                    elif (b == SENTINEL[thestopcounter] and thestopcounter > 0):
-                        thestopcounter += 1
-                        if thestopcounter >= len(SENTINEL)-1:
-                            sys.stdout.buffer.write(bytearray(output))
-                            return
-                            # pass
-                    else:
-                        thestopcounter = 0
+                    if b in SENTINEL:
+                        if b == SENTINEL[thestopcounter]:
+                            thestopcounter+=1
+                        else:
+                            thestopcounter= 0
+
+
+                    if thestopcounter == len(SENTINEL):
+                        sys.stdout.buffer.write(bytearray(output))
+                        return
                     
                     output.append(b)
                     poker += self.interval
                 
-                sys.stdout.buffer.write(bytearray(output))
+                # sys.stdout.buffer.write(bytearray(output))
                 
 
         # otherwise do the byte mode
-        else:
-            pass
+        if self.bbmode:
+            
+            # STORE
+            if self.srmode:
+                pass
+
+            else:
+
+                # INTERVAL = floor((len(self.wrapperName) - self.offset) / (len(self.hidden) + len(SENTINEL)) )
+                INTERVAL = 1
+                self.interval = INTERVAL if self.interval == 0 else self.interval
+
+                out = []
+                poker = self.offset
+                thestopcounter = 0
+                while poker < len(self.wrapper)-1:
+                    b = 0
+                    for i in range(8):
+                        if poker < len(self.wrapper):
+                            b |= (self.wrapper[poker] & 0x00000001)
+
+                        if i < 7:
+                            b = (b << 1) & (2 ** 8 - 1)
+                            poker += self.interval
+
+
+                    if b in SENTINEL:
+                        if b == SENTINEL[thestopcounter]:
+                            thestopcounter+=1
+                        else:
+                            thestopcounter= 0
+
+
+                    if thestopcounter == len(SENTINEL):
+                        sys.stdout.buffer.write(bytearray(out))
+                        return
+
+                    
+                    poker += self.interval
+                    out.append(b)
+                return sys.stdout.buffer.write(bytearray(out))
+
 
 
 
@@ -170,27 +204,3 @@ test.process()
 # test = [0,255,0,255,0]
 # print(checkSentinel(True,test))
 
-
-
-""" 
-IF WE WERE ADULTS AND NOT KIDS WHO WANTED TO CREATE GARBAGE CODE
-"""
-# # start the parser
-# my_parser = argparse.ArgumentParser(description='Use steganography with files')
-# # Add the arguments
-# my_parser.add_argument('-s',metavar='store',type=bool,help='store mode', default=False, nargs="?")
-# my_parser.add_argument('-r',metavar='retrieve',type=bool,help='retrieve mode', default=False,nargs="?")
-
-# my_parser.add_argument('-b',metavar='bit',type=bool,help='bit-mode', default=False,nargs="?")
-# my_parser.add_argument('-B',metavar='byte',type=bool,help='byte-mode', default=False,nargs="?")
-
-
-# my_parser.add_argument('-o',metavar='offset',type=int,help='bit-mode')
-# my_parser.add_argument('-i',metavar='interval',type=int,help='byte-mode')
-# my_parser.add_argument('-w',metavar='wrapper',type=str,help='bit-mode')
-# my_parser.add_argument('-h',metavar='hidden',type=str,help='byte-mode')
-
-
-
-
-# args = my_parser.parse_args()

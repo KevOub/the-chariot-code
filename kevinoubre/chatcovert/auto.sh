@@ -8,10 +8,11 @@ tmux selectp -t 0
 tmux send-keys  "clear" C-m
 tmux send-keys  'python3 server.py' C-m
 
-# TODO allow chromium to hook  into proxy server
 tmux split-window -h
 tmux select-pane -t 1
 tmux send-keys  "clear" C-m
+
+# tmux send-keys  "python3 solver.py | tee /dev/tty | tee output | xclip -i -selection clipboard" C-m
 
 tmux send-keys  "python3 client.py | tee /dev/tty | tee output | xclip -i -selection clipboard" C-m
 

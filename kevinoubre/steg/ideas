@@ -4,3 +4,25 @@ identify image_with_error.png &> /dev/null; echo $?
 for i in $(seq 0 1000); do for j in $(seq 0 1000); do echo $i $j; done; done
 
 go with parralel execution vs tmux panes split for lots of code running
+
+python3 steg.py -r -B -o1024 -i8 -wtest1.bmp > newfile; file newfile
+
+python3 steg.py -r -B -o1025 -i2 -wtest1.bmp
+
+```
+WITH:
+for i in $(seq 124 2048); do 
+    for j in $(seq 1 8); 
+GOT: 
+
+kevin@fedora ~/p/t/k/steg (main) [SIGINT]> time ./normalcrack.sh 
+mkdir: cannot create directory ‘output’: File exists
+GOT A JPEG
+FOUND AT OFFSET 1024 AND INTERVAL 8
+
+________________________________________________________
+Executed in  269.37 secs    fish           external
+   usr time    8.15 secs  292.00 micros    8.15 secs
+   sys time    7.39 secs  127.00 micros    7.39 secs
+
+```
