@@ -23,3 +23,5 @@ tmux send-keys "tmux kill-session -t $session" C-m
 tmux attach-session -t $session
 
 echo "DONE"
+
+

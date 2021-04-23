@@ -1,15 +1,18 @@
 import socket
 import sys
-from time import time
+from time import time,sleep
 from binascii import unhexlify
 
 DEBUG = False
 
-IP = '127.0.0.1'
-PORT = 1337
+IP = '138.47.102.120'
+PORT = 33333
 
-ONE =  0.1
-ZERO = 0.025
+
+
+DELAY = 0
+ONE =  0.099
+ZERO = 0.006
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 s.connect((IP,PORT))
@@ -25,6 +28,8 @@ def binaryToAsciiChar(l):
     for val in l:
         yield chr(int(val,2))
 
+
+sleep(int(DELAY))
 
 data = s.recv(4096).decode()
 covert_bin = ""
@@ -44,6 +49,7 @@ while (data.rstrip("\n") != "EOF"):
         covert_bin += "1"
     else:
         covert_bin += "0"
+
 
 s.close()
 

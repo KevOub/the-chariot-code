@@ -5,8 +5,8 @@ from binascii import unhexlify
 
 DEBUG = False
 
-IP = '127.0.0.1'
-PORT = 1337
+IP = '138.47.102.120'
+PORT = 33333
 
 ONE =  0.1
 ZERO = 0.025
@@ -25,30 +25,50 @@ def binaryToAsciiChar(l):
     for val in l:
         yield chr(int(val,2))
 
+DELAY = 0
+while True:
+    try:
+            
+        data = s.recv(4096).decode()
+        covert_bin = ""
+        deltastream = []
+        counter = 0
+        while (data.rstrip("\n") != "EOF"):
+            # sys.stdout.write(data)
+            # sys.stdout.flush()
+            # data = s.recv(4096).decode()
+            t0 = time()
+            data = s.recv(4096).decode()
+            t1 = time()
+            delta = round(t1-t0,3)
 
-data = s.recv(4096).decode()
-covert_bin = ""
-deltastream = []
-counter = 0
-while (data.rstrip("\n") != "EOF"):
-    # sys.stdout.write(data)
-    # sys.stdout.flush()
-    # data = s.recv(4096).decode()
-    t0 = time()
-    data = s.recv(4096).decode()
-    t1 = time()
-    delta = round(t1-t0,3)
+            deltastream.append(str(delta))
+            if DEBUG:
+                sys.stdout.write(" D: {}\n".format(delta))
+                sys.stdout.flush()
+                
+            sys.stdout.write("0 = {} 1 = {}\r".format(max(deltastream),min(deltastream)))
+            sys.stdout.flush()
 
-    deltastream.append(str(delta)+"\n")
-    if DEBUG:
-        sys.stdout.write(" D: {}\n".format(delta))
-        sys.stdout.flush()
-        
-    sys.stdout.write("0 = {} 1 = {}\r".format(max(deltastream),min(deltastream)))
-    sys.stdout.flush()
+            if counter > 8:
+                break
+            else:
+                counter += 1
 
-s.close()
+        s.close()
+        # sys.stdout.write
+        # sys.stdout.flush()
 
+
+        break
+    except:
+        DELAY += 0.1
+        time.sleep(0.1)
+
+
+print("")
+
+print("DELAY = {} 1 = {}  0 = {}".format(DELAY,max(deltastream),min(deltastream)))
 
 # print("\nCOVERT:\t")
 # print(covert_bin)

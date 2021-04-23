@@ -3,7 +3,8 @@ import os
 import sys
 from math import floor
 
-SENTINEL = [0x0,0xff,0x0,0x0,0xff,0x0]
+# CURRENLTY IN LEFT TO RIGHT STORAGE MODE
+SENTINEL = [0x0,0xff,0x0,0xff,0x0]
 
 
 """ 
@@ -142,6 +143,7 @@ class Steg():
 
 
                     if thestopcounter == len(SENTINEL):
+                        # output += SENTINEL
                         sys.stdout.buffer.write(bytearray(output))
                         return
                     
@@ -153,7 +155,7 @@ class Steg():
 
         # otherwise do the byte mode
         if self.bbmode:
-            
+                
             # STORE
             if self.srmode:
                 pass
@@ -161,8 +163,8 @@ class Steg():
             else:
 
                 # INTERVAL = floor((len(self.wrapperName) - self.offset) / (len(self.hidden) + len(SENTINEL)) )
-                INTERVAL = 1
-                self.interval = INTERVAL if self.interval == 0 else self.interval
+                # INTERVAL = 1
+                # self.interval = INTERVAL if self.interval == 0 else self.interval
 
                 out = []
                 poker = self.offset
@@ -192,7 +194,8 @@ class Steg():
                     
                     poker += self.interval
                     out.append(b)
-                return sys.stdout.buffer.write(bytearray(out))
+
+                # return sys.stdout.buffer.write(bytearray(out))
 
 
 
