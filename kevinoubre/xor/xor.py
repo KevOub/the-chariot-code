@@ -23,8 +23,8 @@ def bitstreamOfData(stringdata):
 
 
 
-xorDataHex = "".join(list(map(lambda x : xorHex(x[0],x[1])[2:],zip(cipher,key))))
-xorDatTest = bytes(map(lambda x : xorBest(x[0],x[1]),zip(cipher,key)))
+# xorDataHex = "".join(list(map(lambda x : xorHex(x[0],x[1])[2:],zip(cipher,key))))
+xorDatTest = bytes(map(lambda x : xorBest(x[0],x[1]) ,zip(cipher,key)))
 
 # xorDataString = "".join(list(map(lambda x : xorDataHex(x[0],x[1])[2:],zip(cipher,key))))
 

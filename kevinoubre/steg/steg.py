@@ -4,7 +4,7 @@ import sys
 from math import floor
 
 # CURRENLTY IN LEFT TO RIGHT STORAGE MODE
-SENTINEL = [0x0,0xff,0x0,0xff,0x0]
+SENTINEL = [0x0,0xff,0x0,0x0,0xff,0x0]
 
 
 """ 
@@ -15,18 +15,18 @@ def loadfiles(file):
     with open(file, "rb") as f:
         return f.read()
 
-def checkSentinel(mode,arr):
-    # mode:True = right to left 
-    if mode:
-        if len(arr) != len(SENTINEL):
-            return False
-        g2g = [True if val == arr[count] else False for count,val in enumerate(SENTINEL)]
-        return all(g2g)
+# def checkSentinel(mode,arr):
+#     # mode:True = right to left 
+#     if mode:
+#         if len(arr) != len(SENTINEL):
+#             return False
+#         g2g = [True if val == arr[count] else False for count,val in enumerate(SENTINEL)]
+#         return all(g2g)
             
     
-    # left to right
-    else:
-        pass
+#     # left to right
+#     else:
+#         pass
 
 
 class Steg():
@@ -38,6 +38,8 @@ class Steg():
         self.srmode = False
         self.bbmode = False
 
+        # self.reverse = False
+
         self.offset = 0
         self.interval = 0
         self.wrapperName = ""
@@ -47,6 +49,13 @@ class Steg():
         self.handleArgs()
 
         
+    def reachedSentinel(self,poker):
+        # goes through [start,stop,step] and see if it matches the sentinel
+        try:
+            return [self.wrapper[i] for i in range(poker,poker + (self.interval * 6), self.interval)] == SENTINEL
+        except:
+            return -1
+
 
 
 
@@ -107,6 +116,27 @@ class Steg():
         out += "HIDDEN:\t\t{}\n".format(self.hiddenName) if len(self.hiddenName) != 0 else ""
         return out
 
+    def retrieveByteMode(self):
+        poker = self.offset
+        output = []
+        thestopcounter = 0
+        while (poker < len(self.wrapper)):
+            b = self.wrapper[poker]  
+
+            if b == SENTINEL[0]:
+
+                finished = self.reachedSentinel(poker)
+                if finished == -1:
+                    return
+
+                if finished:
+                    sys.stdout.buffer.write(bytearray(output))
+                    return
+            
+            poker += self.interval
+            output.append(b)
+
+
     def process(self):
         
         # checks for bit mode
@@ -122,33 +152,35 @@ class Steg():
                     i += 1
             
                 i = 0
-                # while (i < len(SENTINEL) ):
-                    # self.wrapper[poker] = SENTINEL[i]
-                    # poker += 1
-                    # i += 1
+                while (i < len(SENTINEL) ):
+                    self.wrapper[poker] = SENTINEL[i]
+                    poker += 1
+                    i += 1
 
             # RETRIEVE
             else:
-                poker = self.offset
-                output = []
-                thestopcounter = 0
-                while (poker < len(self.wrapper)):
-                    b = self.wrapper[poker]  
-                    if b in SENTINEL:
-                        output.append(b)
-                        if b == SENTINEL[thestopcounter]:
-                            thestopcounter+=1
-                        else:
-                            thestopcounter= 0
+                self.retrieveByteMode()
+                
+            # else:
+            #     poker = self.offset
+            #     output = []
+            #     thestopcounter = 0
+            #     while (poker < len(self.wrapper)):
+            #         b = self.wrapper[poker]  
 
+            #         if b in SENTINEL:
 
-                    if thestopcounter == len(SENTINEL):
-                        # output += SENTINEL
-                        sys.stdout.buffer.write(bytearray(output))
-                        return
+            #             finished = self.reachedSentinel(poker)
+            #             if finished == -1:
+            #                 return
+
+            #             if finished:
+            #                 sys.stdout.buffer.write(bytearray(output))
+            #                 return
                     
-                    output.append(b)
-                    poker += self.interval
+            #         poker += self.interval
+            #         output.append(b)
+
                 
                 # sys.stdout.buffer.write(bytearray(output))
                 
@@ -169,30 +201,26 @@ class Steg():
                 out = []
                 poker = self.offset
                 thestopcounter = 0
-                while poker < len(self.wrapper)-1:
+                while poker < len(self.wrapper)-2:
                     b = 0
                     for i in range(8):
-                        if poker < len(self.wrapper):
+                        b = (b << 1) & (2 ** 8 - 1)
+                        try:
                             b |= (self.wrapper[poker] & 0x00000001)
-
-                        if i < 7:
-                            b = (b << 1) & (2 ** 8 - 1)
-                            poker += self.interval
-
-
-                    if b in SENTINEL:
-                        if b == SENTINEL[thestopcounter]:
-                            thestopcounter+=1
-                        else:
-                            thestopcounter= 0
+                        except:
+                            return 
+                        poker += self.interval
 
 
-                    if thestopcounter == len(SENTINEL):
-                        sys.stdout.buffer.write(bytearray(out))
-                        return
+                    if b == SENTINEL[0]:
+                        if b+self.interval == SENTINEL[1]:
+                            if self.reachedSentinel(poker):
+                                sys.stdout.buffer.write(bytearray(output))
+                                return
 
-                    
+
                     poker += self.interval
+                    print(b)
                     out.append(b)
 
                 # return sys.stdout.buffer.write(bytearray(out))

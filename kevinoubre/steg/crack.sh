@@ -32,6 +32,7 @@ solveme () {
 
         fi 
     fi
+     
 }
 
 export -f solveme
@@ -45,6 +46,6 @@ for i in $(seq 124 2048); do
         solveme $i $j & 
           #sem -j+0 solveme $i $j
         done
-    # wait
+    wait
     # echo "INTERVAL IS @ = " $i
 done
