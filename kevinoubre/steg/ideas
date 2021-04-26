@@ -9,6 +9,8 @@ python3 steg.py -r -B -o1024 -i8 -wtest1.bmp > newfile; file newfile
 
 python3 steg.py -r -B -o1025 -i2 -wtest1.bmp
 
+ python3 steg.py -r -b -o1024 -i1 -wstegged-bit.bmp
+
 ```
 WITH:
 for i in $(seq 124 2048); do 

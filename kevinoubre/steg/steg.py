@@ -122,7 +122,7 @@ class Steg():
         thestopcounter = 0
         while (poker < len(self.wrapper)):
             b = self.wrapper[poker]  
-
+             
             if b == SENTINEL[0]:
 
                 finished = self.reachedSentinel(poker)
@@ -133,8 +133,20 @@ class Steg():
                     sys.stdout.buffer.write(bytearray(output))
                     return
             
+
+            """ 
+            if b == SENTINEL[thestopcounter]:
+                thestopcounter += 1
+            else:
+                thestopcounter = 0
+            
+            if thestopcounter >= len(SENTINEL):
+                sys.stdout.buffer.write(bytearray(output))
+                return
+             """
             poker += self.interval
             output.append(b)
+
 
 
     def process(self):
@@ -160,7 +172,7 @@ class Steg():
             # RETRIEVE
             else:
                 self.retrieveByteMode()
-                
+
             # else:
             #     poker = self.offset
             #     output = []
@@ -192,6 +204,7 @@ class Steg():
             if self.srmode:
                 pass
 
+            # RETRIEVE
             else:
 
                 # INTERVAL = floor((len(self.wrapperName) - self.offset) / (len(self.hidden) + len(SENTINEL)) )
@@ -201,26 +214,41 @@ class Steg():
                 out = []
                 poker = self.offset
                 thestopcounter = 0
-                while poker < len(self.wrapper)-2:
+                while poker < len(self.wrapper):
                     b = 0
-                    for i in range(8):
-                        b = (b << 1) & (2 ** 8 - 1)
+                    for i in range(0,8):
                         try:
-                            b |= (self.wrapper[poker] & 0x00000001)
+                            b |= (self.wrapper[poker] & 0x0000001)
                         except:
                             return 
-                        poker += self.interval
+
+                        if i < 7:        
+                            b = (b << 1) & (2 ** 8 - 1)
+                            # print(("{0:b}".format(b)))
+
+                            poker += self.interval
+
+                    # print("---")
+                    # print("PRE {}".format(b))
+                    # b = int('{0:b}'.format(b)[::-1], 2)
+                    # print(("{0:b}".format(b)))
+                    # print("POST {}".format(b))
+
+                    # print(b)
 
 
-                    if b == SENTINEL[0]:
-                        if b+self.interval == SENTINEL[1]:
-                            if self.reachedSentinel(poker):
-                                sys.stdout.buffer.write(bytearray(output))
-                                return
 
+                    if b == SENTINEL[thestopcounter]:
+                        thestopcounter += 1
+                    else:
+                        thestopcounter = 0
+                    
+
+                    if thestopcounter >= len(SENTINEL):
+                        sys.stdout.buffer.write(bytearray(out))
+                        return
 
                     poker += self.interval
-                    print(b)
                     out.append(b)
 
                 # return sys.stdout.buffer.write(bytearray(out))
