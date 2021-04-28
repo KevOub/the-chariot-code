@@ -147,6 +147,41 @@ class Steg():
             poker += self.interval
             output.append(b)
 
+    def retrieveBitMode(self):
+        out = []
+        poker = self.offset
+        thestopcounter = 0
+        while poker < len(self.wrapper):
+            b = 0
+            for i in range(0,8):
+                try:
+                    b |= (self.wrapper[poker] & 0x0000001)
+                except:
+                    return 
+
+                if i < 7:        
+                    b = (b << 1) & (2 ** 8 - 1)
+                    # print(("{0:b}".format(b)))
+
+                    poker += self.interval
+
+            
+
+
+            if b == SENTINEL[thestopcounter]:
+                thestopcounter += 1
+            else:
+                thestopcounter = 0
+            
+
+            if thestopcounter >= len(SENTINEL):
+                sys.stdout.buffer.write(bytearray(out))
+                return
+
+            poker += self.interval
+            out.append(b)
+
+
 
 
     def process(self):
@@ -207,10 +242,19 @@ class Steg():
             # RETRIEVE
             else:
 
+                self.retrieveBitMode()
                 # INTERVAL = floor((len(self.wrapperName) - self.offset) / (len(self.hidden) + len(SENTINEL)) )
                 # INTERVAL = 1
                 # self.interval = INTERVAL if self.interval == 0 else self.interval
 
+                    # print("---")
+                    # print("PRE {}".format(b))
+                    # b = int('{0:b}'.format(b)[::-1], 2)
+                    # print(("{0:b}".format(b)))
+                    # print("POST {}".format(b))
+
+                    # print(b)
+""" 
                 out = []
                 poker = self.offset
                 thestopcounter = 0
@@ -228,14 +272,7 @@ class Steg():
 
                             poker += self.interval
 
-                    # print("---")
-                    # print("PRE {}".format(b))
-                    # b = int('{0:b}'.format(b)[::-1], 2)
-                    # print(("{0:b}".format(b)))
-                    # print("POST {}".format(b))
-
-                    # print(b)
-
+                    
 
 
                     if b == SENTINEL[thestopcounter]:
@@ -250,7 +287,7 @@ class Steg():
 
                     poker += self.interval
                     out.append(b)
-
+ """
                 # return sys.stdout.buffer.write(bytearray(out))
 
 
