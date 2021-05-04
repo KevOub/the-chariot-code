@@ -122,19 +122,20 @@ class Steg():
         thestopcounter = 0
         while (poker < len(self.wrapper)):
             b = self.wrapper[poker]  
-             
-            if b == SENTINEL[0]:
 
-                finished = self.reachedSentinel(poker)
-                if finished == -1:
-                    return
+            # """  
+            # if b == SENTINEL[0]:
 
-                if finished:
-                    sys.stdout.buffer.write(bytearray(output))
-                    return
-            
+            #     finished = self.reachedSentinel(poker)
+            #     if finished == -1:
+            #         return
 
-            """ 
+            #     if finished:
+            #         sys.stdout.buffer.write(bytearray(output))
+            #         return
+            #  """
+
+            # easier to understand
             if b == SENTINEL[thestopcounter]:
                 thestopcounter += 1
             else:
@@ -143,7 +144,8 @@ class Steg():
             if thestopcounter >= len(SENTINEL):
                 sys.stdout.buffer.write(bytearray(output))
                 return
-             """
+
+
             poker += self.interval
             output.append(b)
 

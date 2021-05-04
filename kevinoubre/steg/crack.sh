@@ -31,10 +31,18 @@ solveme () {
         sh -c "python3 steg.py -$SR -$MODE -o$1 -i$2 -w$CRACKILE > /dev/shm/$FILENAME"
     fi
 
+    NEWFILE=$(echo $NEWFILE |  awk '{print $1}')
+    if [[ $NEWFILE == "ASCII" ]]; then
+        # discord.sh --webhook-url=$WEBHOOK_URL --username "BSDS" --text "GOT A $NEWFILE"
+        # discord.sh --webhook-url=$WEBHOOK_URL --username "BSDS" --text "FOUND AT OFFSET $1 AND INTERVAL $2"
+        # discord.sh --webhook-url=$WEBHOOK_URL --username "BSDS" --text "$(cat /dev/shm/$FILENAME)"
+        echo "OFFSET: $1   INTERVAL: $2"  $(cat "/dev/shm/$FILENAME") | tee -a "output/ascii"
+
+    fi
 
     if [[ $(identify /dev/shm/$FILENAME &> /dev/null; echo $?) -eq 0 ]]; then
         NEWFILE=$(sh -c "file -b /dev/shm/$FILENAME")
-        NEWFILE=$(echo $NEWFILE |  awk '{print $1}')
+       
         if [[ $NEWFILE != "data" && $NEWFILE != "empty" ]]; then
 
             echo "GOT A $NEWFILE"
@@ -56,11 +64,15 @@ for i in $(seq 124 2048); do
 
     # seq 1 8 | xargs -n -P 4  bash -c "solveme $i" 
 
+    
     for j in $(seq 1 $UPPERINTERVAL); 
-        do  
-        solveme $i $j & 
-        #sem -j+0 solveme $i $j
-        done
+    do  
+        solveme $i $j &
+    #     #sem -j+0 solveme $i $j
+    done
+    
+    
+
     # wait
     # echo "INTERVAL IS @ = " $i
 done
