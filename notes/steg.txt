@@ -1,0 +1,8 @@
+
+python3 steg.py -(sr) -(bB) -o<val> [-i<val>] -w<val> [-h<val>]
+s   store
+r   retrieve
+o   offset
+i   interval
+w   wrapper
+h   hidden

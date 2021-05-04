@@ -1,0 +1,3 @@
+HOW TO RUN:
+
+python3 bin.py < binary2.txt

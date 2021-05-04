@@ -1,0 +1,2 @@
+python3 xor.py < plaintext > ciphertext
+python3 xor.py < cipherext > plaintext 

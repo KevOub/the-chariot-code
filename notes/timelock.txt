@@ -1,0 +1,2 @@
+
+echo "1999 12 31 23 59 59" | python3 timelock.py

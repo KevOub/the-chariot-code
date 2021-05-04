@@ -98,13 +98,15 @@ class Steg():
             
             if val[1] == "w":
                 # self.wrapper = val[2:]
-                self.wrapper = loadfiles(val[2:])
+                self.wrapper = (loadfiles(val[2:]))
+                # self.wrapper = memoryview(self.wrapper)
                 self.wrapper = bytearray(self.wrapper)
                 self.wrapperName = val[2:]
 
             if val[1] == "h":
                 # self.hidden = val[2:]
                 self.hidden = loadfiles(val[2:])
+                # self.hidden = memoryview(self.hidden)
                 self.hidden = bytearray(self.hidden)
                 self.hiddenName = val[2:]
 
@@ -145,6 +147,7 @@ class Steg():
                 thestopcounter = 0
             
             if thestopcounter >= len(SENTINEL):
+                # sys.stdout.buffer.write(memoryview(output).tolist())
                 sys.stdout.buffer.write(bytearray(output))
                 return
 

@@ -1,0 +1,2 @@
+python3 vig.py -e $KEY
+python3 vig.py -d $KEY

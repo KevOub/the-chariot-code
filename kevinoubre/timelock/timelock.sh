@@ -84,5 +84,3 @@ numeric=$(echo $HASH | rev |  grep -Po '[0-9]{2}' | head -n 1)
 
 echo $alpha$numeric
 
-
-# echo $seconds | md5sum

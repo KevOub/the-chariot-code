@@ -26,7 +26,8 @@ fi
 solveme () {
     FILENAME=$(tr -dc A-Za-z </dev/urandom | head -c 10 ; echo '')
     if [ $MODE = "b" ]; then
-        sh -c "pypy3 steg.py -$SR -$MODE -o$1 -i$2 -w$CRACKILE > /dev/shm/$FILENAME"
+        # sh -c "pypy3 steg.py -$SR -$MODE -o$1 -i$2 -w$CRACKILE > /dev/shm/$FILENAME"
+        sh -c "python3 steg.py -$SR -$MODE -o$1 -i$2 -w$CRACKILE > /dev/shm/$FILENAME"
     else
         sh -c "python3 steg.py -$SR -$MODE -o$1 -i$2 -w$CRACKILE > /dev/shm/$FILENAME"
     fi
@@ -49,7 +50,7 @@ solveme () {
             echo "FOUND AT OFFSET $1 AND INTERVAL $2"
             mv /dev/shm/$FILENAME $(pwd)/output/$i.$NEWFILE
 
-            discord.sh --webhook-url=$WEBHOOK_URL --username "BSDS" --text "GOT A $NEWFILE"
+            discord.sh --webhook-url=$WEBHOOK_URL --username "" --text ""
             discord.sh --webhook-url=$WEBHOOK_URL --username "BSDS" --text "FOUND AT OFFSET $1 AND INTERVAL $2"
             discord.sh --webhook-url=$WEBHOOK_URL --username "BSDS" --file $(pwd)/output/$i.$NEWFILE --text "$(head -n 1 /dev/shm/$FILENAME)"
 
