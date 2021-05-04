@@ -38,7 +38,7 @@ class Steg():
         self.srmode = False
         self.bbmode = False
 
-        # self.reverse = False
+        self.reverse = False
 
         self.offset = 0
         self.interval = 0
@@ -99,11 +99,13 @@ class Steg():
             if val[1] == "w":
                 # self.wrapper = val[2:]
                 self.wrapper = loadfiles(val[2:])
+                self.wrapper = bytearray(self.wrapper)
                 self.wrapperName = val[2:]
 
             if val[1] == "h":
                 # self.hidden = val[2:]
                 self.hidden = loadfiles(val[2:])
+                self.hidden = bytearray(self.hidden)
                 self.hiddenName = val[2:]
 
         
@@ -183,6 +185,51 @@ class Steg():
             poker += self.interval
             out.append(b)
 
+    def storeByteMode(self):
+        i = 0
+        # the offset, which changes
+        poker = self.offset
+        while (i < len(self.hidden)):
+            self.wrapper[poker] = self.hidden[i]
+            poker += self.interval
+            i += 1
+    
+        i = 0
+        while (i < len(SENTINEL) ):
+            self.wrapper[poker] = SENTINEL[i]
+            poker += 1
+            i += 1
+        
+        sys.stdout.buffer.write(self.wrapper)
+        
+
+
+    def storeBitMode(self):
+        poker = self.offset
+        
+        i = 0 
+        while i < len(self.hidden):
+
+            self.wrapper[poker] &=  0b11111110
+            self.wrapper[poker] |= ((self.wrapper[i] & 0b10000000) >> 7)
+            self.hidden[i] = (self.hidden[i] << 1) & (2 ** 8 - 1)
+
+            poker += self.interval
+            i += 1
+
+        i = 0
+        while i < len(SENTINEL):
+            for j in range(8):
+                self.wrapper[poker] &= 0b11111110
+                self.wrapper[poker] |= ((SENTINEL[i] & 0b10000000) >> 7)
+                SENTINEL[i] = (SENTINEL[i] << 1) & (2 ** 8 - 1)
+                poker += self.interval
+            i += 1
+        
+        sys.stdout.buffer.write(self.wrapper)
+
+
+
 
 
 
@@ -192,55 +239,23 @@ class Steg():
         if not self.bbmode:
             # STORE
             if self.srmode:
-                i = 0
-                # the offset, which changes
-                poker = self.offset
-                while (i < len(self.hidden)):
-                    self.wrapper[poker]
-                    poker += self.interval
-                    i += 1
-            
-                i = 0
-                while (i < len(SENTINEL) ):
-                    self.wrapper[poker] = SENTINEL[i]
-                    poker += 1
-                    i += 1
+                self.storeByteMode()
+               
 
             # RETRIEVE
             else:
                 self.retrieveByteMode()
 
-            # else:
-            #     poker = self.offset
-            #     output = []
-            #     thestopcounter = 0
-            #     while (poker < len(self.wrapper)):
-            #         b = self.wrapper[poker]  
-
-            #         if b in SENTINEL:
-
-            #             finished = self.reachedSentinel(poker)
-            #             if finished == -1:
-            #                 return
-
-            #             if finished:
-            #                 sys.stdout.buffer.write(bytearray(output))
-            #                 return
-                    
-            #         poker += self.interval
-            #         output.append(b)
-
-                
-                # sys.stdout.buffer.write(bytearray(output))
-                
 
         # otherwise do the byte mode
         if self.bbmode:
                 
             # STORE
             if self.srmode:
-                pass
 
+                self.storeBitMode()
+                
+                
             # RETRIEVE
             else:
 
