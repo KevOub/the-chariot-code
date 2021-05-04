@@ -272,7 +272,7 @@ class Steg():
         i = 0
         while (i < len(SENTINEL) ):
             self.wrapper[poker] = SENTINEL[i]
-            poker += 1
+            poker += self.interval
             i += 1
         
         sys.stdout.buffer.write(self.wrapper)
@@ -284,17 +284,16 @@ class Steg():
         
         i = 0 
         while i < len(self.hidden):
-
-            self.wrapper[poker] &=  0b11111110
-            self.wrapper[poker] |= ((self.wrapper[i] & 0b10000000) >> 7)
-            self.hidden[i] = (self.hidden[i] << 1) & (2 ** 8 - 1)
-
-            poker += self.interval
-            i += 1
+            for j in range(8):
+                self.wrapper[poker] &=  0b11111110
+                self.wrapper[poker] |= ((self.hidden[i] & 0b10000000) >> 7)
+                self.hidden[i] = (self.hidden[i] << 1) & (2 ** 8 - 1)
+                poker += self.interval
+            i += 1  
 
         i = 0
         while i < len(SENTINEL):
-            for j in range(8):
+            for j in range(0,8):
                 self.wrapper[poker] &= 0b11111110
                 self.wrapper[poker] |= ((SENTINEL[i] & 0b10000000) >> 7)
                 SENTINEL[i] = (SENTINEL[i] << 1) & (2 ** 8 - 1)
