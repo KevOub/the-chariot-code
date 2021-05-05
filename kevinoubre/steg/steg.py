@@ -243,8 +243,6 @@ class Steg():
                     poker += self.interval
 
             
-
-
             if b == SENTINEL[thestopcounter]:
                 thestopcounter += 1
             else:

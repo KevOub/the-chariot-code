@@ -6,11 +6,12 @@ export SHELL=$(type -p bash)
 # command line arguments
 MODE="B"
 SR="r"
-# CRACKILE="stegged-bit.bmp"
-CRACKILE="test1.bmp"
+# CRACKFILE="stegged-bit.bmp"
+CRACKFILE="stegged-byte.bmp"
+echo $CRACKFILE
 
 # ranges for the loop
-UPPERINTERVAL="8"
+UPPERINTERVAL="16"
 
 UPPEROFFSET="124"
 LOWEROFFSET="2048"
@@ -26,31 +27,33 @@ fi
 solveme () {
     FILENAME=$(tr -dc A-Za-z </dev/urandom | head -c 10 ; echo '')
     if [ $MODE = "b" ]; then
-        # sh -c "pypy3 steg.py -$SR -$MODE -o$1 -i$2 -w$CRACKILE > /dev/shm/$FILENAME"
-        sh -c "python3 steg.py -$SR -$MODE -o$1 -i$2 -w$CRACKILE > /dev/shm/$FILENAME"
+        # sh -c "pypy3 steg.py -$SR -$MODE -o$1 -i$2 -w$CRACKFILE > /dev/shm/$FILENAME"
+        # sh -c "python3 steg.py -$SR -$MODE -o$1 -i$2 -w$CRACKFILE > /dev/shm/$FILENAME"
+       sh -c "./main -o $1 -i $2 -w $CRACKFILE -b b" > /dev/shm/$FILENAME
     else
-        sh -c "python3 steg.py -$SR -$MODE -o$1 -i$2 -w$CRACKILE > /dev/shm/$FILENAME"
-    fi
+        # sh -c "python3 steg.py -$SR -$MODE -o$1 -i$2 -w$CRACKFILE > /dev/shm/$FILENAME"
+       sh -c "./main -o $1 -i $2 -w $CRACKFILE -b B" > /dev/shm/$FILENAME
+    fi  
 
-    NEWFILE=$(echo $NEWFILE |  awk '{print $1}')
-    if [[ $NEWFILE == "ASCII" ]]; then
+    # NEWFILE=$(echo $NEWFILE |  awk '{print $1}')
+    # if [[ $NEWFILE == "ASCII" ]]; then
         # discord.sh --webhook-url=$WEBHOOK_URL --username "BSDS" --text "GOT A $NEWFILE"
         # discord.sh --webhook-url=$WEBHOOK_URL --username "BSDS" --text "FOUND AT OFFSET $1 AND INTERVAL $2"
         # discord.sh --webhook-url=$WEBHOOK_URL --username "BSDS" --text "$(cat /dev/shm/$FILENAME)"
-        echo "OFFSET: $1   INTERVAL: $2"  $(cat "/dev/shm/$FILENAME") | tee -a "output/ascii"
+        # echo "OFFSET: $1   INTERVAL: $2"  $(cat "/dev/shm/$FILENAME") | tee -a "$(pwd)output/ascii"
 
-    fi
+    # fi
 
     if [[ $(identify /dev/shm/$FILENAME &> /dev/null; echo $?) -eq 0 ]]; then
-        NEWFILE=$(sh -c "file -b /dev/shm/$FILENAME")
+        NEWFILE=$(sh -c "file -b /dev/shm/$FILENAME | grep -Eo '^[^ ]+'" )
        
         if [[ $NEWFILE != "data" && $NEWFILE != "empty" ]]; then
 
             echo "GOT A $NEWFILE"
             echo "FOUND AT OFFSET $1 AND INTERVAL $2"
-            mv /dev/shm/$FILENAME $(pwd)/output/$i.$NEWFILE
+            cp /dev/shm/$FILENAME $(pwd)/output/$i.$NEWFILE
 
-            discord.sh --webhook-url=$WEBHOOK_URL --username "" --text ""
+            discord.sh --webhook-url=$WEBHOOK_URL --username "BSDS" --text ""
             discord.sh --webhook-url=$WEBHOOK_URL --username "BSDS" --text "FOUND AT OFFSET $1 AND INTERVAL $2"
             discord.sh --webhook-url=$WEBHOOK_URL --username "BSDS" --file $(pwd)/output/$i.$NEWFILE --text "$(head -n 1 /dev/shm/$FILENAME)"
 
