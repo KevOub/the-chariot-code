@@ -120,12 +120,12 @@ class Steg():
         out += "HIDDEN:\t\t{}\n".format(self.hiddenName) if len(self.hiddenName) != 0 else ""
         return out
 
-    # FUTURE PROJECT TODO
+    # TODO HAVE NOT TESTED FULLY 
     def retrieveByteModeReversed(self):
-        poker = self.offset
+        poker = (len(self.wrapper) - self.offset)
         output = []
         thestopcounter = 0
-        while (poker < len(self.wrapper)):
+        while (poker > self.interval):
             b = self.wrapper[poker]  
 
             # """  
@@ -151,8 +151,8 @@ class Steg():
                 sys.stdout.buffer.write(bytearray(output))
                 return
 
-
-            poker += self.interval
+            # Right to left so subtract not add
+            poker -= self.interval
             output.append(b)
 
 
@@ -189,12 +189,12 @@ class Steg():
             poker += self.interval
             output.append(b)
 
-    # FUTURE PROJECT TODO
+    # TODO HAVE NOT NEEDED TO TEST IT
     def retrieveBitModeReversed(self):
         out = []
-        poker = self.offset
+        poker = (len(self.wrapper) - self.offset)
         thestopcounter = 0
-        while poker < len(self.wrapper):
+        while poker > 0:
             b = 0
             for i in range(0,8):
                 try:
@@ -221,7 +221,7 @@ class Steg():
                 sys.stdout.buffer.write(bytearray(out))
                 return
 
-            poker += self.interval
+            poker -= self.interval
             out.append(b)
 
     def retrieveBitMode(self):
