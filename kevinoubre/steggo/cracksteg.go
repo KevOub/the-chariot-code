@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"sync"
+	"unicode"
 
 	"github.com/gabriel-vasile/mimetype"
 )
@@ -77,8 +78,12 @@ func main() {
 
 	// counter := 0
 	// Go through the motions
+	// stringsOutput := make(chan string)
+	max := 0
+	stringOutput := ""
+	metadata := ""
 	for i := lowerOffset; i <= upperOffset; i++ {
-		for j := lowerInterval; j <= lowerOffset; j++ {
+		for j := lowerInterval; j <= upperInterval; j++ {
 			// counter += 1
 			wg.Add(1)
 			go func(i int, j int) {
@@ -89,7 +94,7 @@ func main() {
 
 				if MODE == "B" {
 					output = RetrieveByteMode(data, SENTINEL, j, i)
-				} else {
+				} else if MODE == "b" {
 					output = RetrieveBitMode(data, SENTINEL, j, i)
 				}
 
@@ -105,37 +110,68 @@ func main() {
 
 					// 	}
 
-					// // }
-					// if utf8.Valid(output[:len(output)-len(SENTINEL)]) {
-					// 	// f := bufio.NewWriter(os.Stdout)
-					// 	// defer f.Flush()
-					// 	// f.Write(output)
-					// 	fmt.Printf("FOUND:\tINTERVAL %d\tOFFSET %d\n", j, i)
-					// 	fmt.Printf("\t%s\n", "string")
 					// }
+					if len(output) >= len(SENTINEL) {
 
-					if len(mime.Extension()) > 0 {
-						// mu.Lock()
-						if !contains(IGNORESEXTENSIONS, mime.Extension()) {
-							fmt.Printf("FOUND:\tINTERVAL %d\tOFFSET %d\n", j, i)
-							fmt.Printf("\t%s\n", mime.Extension())
-							StoreFile(output, mime.Extension(), "FOUND")
+						// if j == 2 && i == 1025 {
+						// 	f := bufio.NewWriter(os.Stdout)
+						// 	defer f.Flush()
+						// 	f.Write(output[0 : len(output)-len(SENTINEL)])
+
+						// }
+						// // fmt.Printf("FOUND:\tINTERVAL %d\tOFFSET %d\n", j, i)
+						// fmt.Printf("\t%s\n", "string")
+
+						// select {
+						// case value <- string(output):
+						// 	ok = true
+						// default:
+						// 	ok = false
+						// }
+
+						// fmt.Printf("%s \n", ok)
+						// value <- string(output)
+						// defer close(value)
+						// defer wg.Done()
+						if isPrintable(string(output[:len(output)-len(SENTINEL)])) && len(output) >= max {
+							max = len(output)
+							// fmt.Printf("FOUND:\tINTERVAL %d\tOFFSET %d\n", j, i)
+							metadata = fmt.Sprintf("FOUND:\tINTERVAL %d\tOFFSET %d\n", j, i)
+							stringOutput = string(output)
+						}
+
+						if len(mime.Extension()) > 0 {
+							// mu.Lock()
+							if !contains(IGNORESEXTENSIONS, mime.Extension()) {
+								fmt.Printf("FOUND:\tINTERVAL %d\tOFFSET %d\n", j, i)
+								fmt.Printf("\t%s\n", mime.Extension())
+								name := fmt.Sprintf("file.i.%d.o.%d", i, j)
+								StoreFile(output, mime.Extension(), name)
+
+							}
+							defer wg.Done()
+
+							// mu.Unlock()
 
 						}
-						// mu.Unlock()
 
 					}
 
 				}
+
 				defer wg.Done()
 
 			}(i, j)
+
 		}
 
 	}
-	wg.Wait()
 
-	// fmt.Print(counter)
+	wg.Wait()
+	// The usual best fit string is filtered by this
+	fmt.Println(metadata)
+	fmt.Print(stringOutput)
+	StoreFile([]byte(stringOutput), ".txt", "beststring")
 
 }
 
@@ -163,20 +199,6 @@ func StoreFile(data []byte, extension string, name string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-}
-
-func DetectText(data []byte) (bool, string) {
-	detectedMIME := mimetype.Detect(data)
-
-	isBinary := true
-	for mime := detectedMIME; mime != nil; mime = mime.Parent() {
-		if mime.Is("text/plain") {
-			isBinary = false
-		}
-	}
-
-	return isBinary, detectedMIME.Extension()
 
 }
 
@@ -258,4 +280,16 @@ func RetrieveByteMode(wrapper []byte, SENTINEL []byte, interval int, offset int)
 
 	return nil
 
+}
+
+// Magically checks if the string is printable characters
+func isPrintable(s string) bool {
+	for _, c := range s {
+		if c > unicode.MaxASCII || !unicode.IsPrint(c) {
+			if !(c == '\n' || c == '\t' || c == '\r') {
+				return false
+			}
+		}
+	}
+	return true
 }
