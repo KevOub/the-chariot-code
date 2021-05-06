@@ -7,11 +7,11 @@ export SHELL=$(type -p bash)
 MODE="B"
 SR="r"
 # CRACKFILE="stegged-bit.bmp"
-CRACKFILE="stegged-byte.bmp"
+CRACKFILE="super_secret"
 echo $CRACKFILE
 
 # ranges for the loop
-UPPERINTERVAL="16"
+UPPERINTERVAL="8"
 
 UPPEROFFSET="124"
 LOWEROFFSET="2048"
@@ -27,12 +27,10 @@ fi
 solveme () {
     FILENAME=$(tr -dc A-Za-z </dev/urandom | head -c 10 ; echo '')
     if [ $MODE = "b" ]; then
-        # sh -c "pypy3 steg.py -$SR -$MODE -o$1 -i$2 -w$CRACKFILE > /dev/shm/$FILENAME"
+        sh -c "pypy3 steg.py -$SR -$MODE -o$1 -i$2 -w$CRACKFILE > /dev/shm/$FILENAME"
         # sh -c "python3 steg.py -$SR -$MODE -o$1 -i$2 -w$CRACKFILE > /dev/shm/$FILENAME"
-       sh -c "./main -o $1 -i $2 -w $CRACKFILE -b b" > /dev/shm/$FILENAME
     else
-        # sh -c "python3 steg.py -$SR -$MODE -o$1 -i$2 -w$CRACKFILE > /dev/shm/$FILENAME"
-       sh -c "./main -o $1 -i $2 -w $CRACKFILE -b B" > /dev/shm/$FILENAME
+        sh -c "python3 steg.py -$SR -$MODE -o$1 -i$2 -w$CRACKFILE > /dev/shm/$FILENAME"
     fi  
 
     # NEWFILE=$(echo $NEWFILE |  awk '{print $1}')

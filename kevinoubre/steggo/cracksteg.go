@@ -46,7 +46,7 @@ func main() {
 	lowerInterval := *lowerIntervalFlag
 
 	/*
-		DISPLAY PROUDLY NOW
+		DISPLAY PROUDLY NOW THE FLAG DATA
 	*/
 
 	fmt.Printf("CRACKING\t%s\t\n", WRAPPERNAME)
@@ -72,86 +72,57 @@ func main() {
 
 	// start of multithreading
 	var wg sync.WaitGroup
-	// mu := &sync.Mutex{}
-	// Size of wait group
-	// wg.Add((upperOffset - lowerOffset) * (upperInterval - lowerInterval))
 
-	// counter := 0
-	// Go through the motions
-	// stringsOutput := make(chan string)
+	// stuff for finding the best string
 	max := 0
 	stringOutput := ""
 	metadata := ""
 	for i := lowerOffset; i <= upperOffset; i++ {
 		for j := lowerInterval; j <= upperInterval; j++ {
-			// counter += 1
+
 			wg.Add(1)
+			// concurrency start
 			go func(i int, j int) {
 
 				var output []byte
 
-				// stringOutput := make([]byte, 0)
-
+				// what mode is the system running as
 				if MODE == "B" {
 					output = RetrieveByteMode(data, SENTINEL, j, i)
 				} else if MODE == "b" {
 					output = RetrieveBitMode(data, SENTINEL, j, i)
 				}
 
+				// if we found anything
 				if len(output) > 0 {
 
+					// get the filetype
 					mime := mimetype.Detect(output)
-					// if mime.Is("application/octet-stream") {
-					// 	invalid, _ := DetectText(output)
-					// 	if !invalid {
-					// 		f := bufio.NewWriter(os.Stdout)
-					// 		defer f.Flush()
-					// 		f.Write(output)
 
-					// 	}
-
-					// }
+					// ensure we got a file and not gobly guck
 					if len(output) >= len(SENTINEL) {
 
-						// if j == 2 && i == 1025 {
-						// 	f := bufio.NewWriter(os.Stdout)
-						// 	defer f.Flush()
-						// 	f.Write(output[0 : len(output)-len(SENTINEL)])
-
-						// }
-						// // fmt.Printf("FOUND:\tINTERVAL %d\tOFFSET %d\n", j, i)
-						// fmt.Printf("\t%s\n", "string")
-
-						// select {
-						// case value <- string(output):
-						// 	ok = true
-						// default:
-						// 	ok = false
-						// }
-
-						// fmt.Printf("%s \n", ok)
-						// value <- string(output)
-						// defer close(value)
-						// defer wg.Done()
+						// check if the string is printable [ignoring the sentinel] and larger than the other previous strings of code found
 						if isPrintable(string(output[:len(output)-len(SENTINEL)])) && len(output) >= max {
 							max = len(output)
-							// fmt.Printf("FOUND:\tINTERVAL %d\tOFFSET %d\n", j, i)
+							// Store the metadata
 							metadata = fmt.Sprintf("FOUND:\tINTERVAL %d\tOFFSET %d\n", j, i)
 							stringOutput = string(output)
 						}
 
+						// Otherwise it is a file
 						if len(mime.Extension()) > 0 {
-							// mu.Lock()
+							// ensure I do not find the forbidden extensions
 							if !contains(IGNORESEXTENSIONS, mime.Extension()) {
+
 								fmt.Printf("FOUND:\tINTERVAL %d\tOFFSET %d\n", j, i)
 								fmt.Printf("\t%s\n", mime.Extension())
 								name := fmt.Sprintf("file.i.%d.o.%d", i, j)
+								// Saves the bytes to the disk
 								StoreFile(output, mime.Extension(), name)
 
 							}
 							defer wg.Done()
-
-							// mu.Unlock()
 
 						}
 
@@ -202,6 +173,7 @@ func StoreFile(data []byte, extension string, name string) {
 
 }
 
+// RetrieveBitMode is straight from the PDF no explanation needed
 func RetrieveBitMode(wrapper []byte, SENTINEL []byte, interval int, offset int) []byte {
 	// i := 0
 	var b byte
@@ -246,6 +218,7 @@ func RetrieveBitMode(wrapper []byte, SENTINEL []byte, interval int, offset int) 
 
 }
 
+// RetrieveByteMode is straight from the PDF no explanation needed
 func RetrieveByteMode(wrapper []byte, SENTINEL []byte, interval int, offset int) []byte {
 	i := 0
 	poker := offset

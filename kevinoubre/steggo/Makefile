@@ -9,3 +9,5 @@ compile:
 	echo "Compiling for every OS and Platform"
 	GOOS=linux GOARCH=amd64 go build -o bin/cracksteg-linux cracksteg.go
 	GOOS=windows GOARCH=amd64 go build -o bin/cracksteg-windows cracksteg.go
+	GOOS=darwin GOARCH=amd64 go build -o bin/cracksteg-darwin cracksteg.go
+
