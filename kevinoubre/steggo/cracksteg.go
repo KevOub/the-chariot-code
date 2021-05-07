@@ -116,13 +116,12 @@ func main() {
 							if !contains(IGNORESEXTENSIONS, mime.Extension()) {
 
 								fmt.Printf("FOUND:\tINTERVAL %d\tOFFSET %d\n", j, i)
-								fmt.Printf("\t%s\n", mime.Extension())
-								name := fmt.Sprintf("file.i.%d.o.%d", i, j)
+								name := fmt.Sprintf("file.o.%d.i.%d%s", i, j, mime.Extension())
+								fmt.Printf("\t%s\n", name)
 								// Saves the bytes to the disk
 								StoreFile(output, mime.Extension(), name)
 
 							}
-							defer wg.Done()
 
 						}
 
@@ -138,8 +137,10 @@ func main() {
 
 	}
 
-	wg.Wait()
 	// The usual best fit string is filtered by this
+
+	wg.Wait()
+
 	fmt.Println(metadata)
 	fmt.Print(stringOutput)
 	StoreFile([]byte(stringOutput), ".txt", "beststring")
