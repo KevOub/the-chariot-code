@@ -3,7 +3,7 @@ from itertools import cycle
 
 # Read the file
 cipher = sys.stdin.buffer.read()
-with open("key2", "rb") as binary_file:
+with open("key", "rb") as binary_file:
     # Read the whole file at once
     key = binary_file.read()
 

@@ -1,6 +1,12 @@
 #!/bin/bash
 
 DEBUG=false
+########################### 
+#   THIS CODE IS GOOD FOR WHEN THE CURRENT TIME IS NEEDED AND 
+#   AN EPOCH IS GIVEN
+#   I *COULD* REWRITE IT FOR SUPPORT WITH WHAT I WILL ADD...
+#   BUT IT WILL BE EASIER AS A SECOND PROGRAM
+########################### 
 
 # EPOCHSECONDS IS A BUILTIN VARIABLE
 
@@ -8,9 +14,8 @@ DEBUG=false
 # CURRENTTIME="2017 04 26 15 14 30"
 # CURRENTTIME="2013 05 06 07 43 25"
 # if not testing
-
 printf -v CURRENTTIME '%(%Y %m %d %H %M %S)T\n' -1 
-
+#CURRENTTIME=$2
 # CURRENTTIME=$2
 
 EPOCHTIMEGIVEN=""
@@ -94,11 +99,13 @@ HASH=$(echo $seconds | tr -d "\n" | md5sum | cut -c -32 | tr -d "\n" | md5sum | 
 # echo $HASH
 
 
+#echo ${HASH:16:1}
+
 # alpha=$(echo $HASH | grep -Po '[a-f]{2}' | head -n 1)
 alpha=$(echo $HASH | grep -Po "[a-f]" | head -n2 | tr -d '\n')
 # numeric=$(echo $HASH | rev |  grep -Po '[0-9]{2}' | head -n 1)
 numeric=$(echo $HASH | rev |  grep -Po "[0-9]" | head -n2 | tr -d '\n' )
-echo $alpha$numeric
+echo $alpha$numeric${HASH:16:1}
 
 
 
