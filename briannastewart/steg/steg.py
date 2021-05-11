@@ -9,9 +9,11 @@ from math import floor
 SENTINEL = ""
 STORING_METHOD = ""
 
+# Byte Method
 def byte_method():
     pass
 
+# Bit Method
 def bit_method():
     pass
 
