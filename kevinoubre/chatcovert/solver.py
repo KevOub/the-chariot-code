@@ -1,12 +1,14 @@
 import socket
 import sys
-from time import time
+from time import time,sleep
 from binascii import unhexlify
+from jenkspy import JenksNaturalBreaks
+
 
 DEBUG = False
 
-IP = '138.47.102.120'
-PORT = 33333
+IP = '192.168.122.1'
+PORT = 1337
 
 ONE =  0.1
 ZERO = 0.025
@@ -24,6 +26,10 @@ def divideIntoNBits(l, n):
 def binaryToAsciiChar(l):
     for val in l:
         yield chr(int(val,2))
+
+
+jnb = JenksNaturalBreaks()
+
 
 DELAY = 0
 while True:
@@ -43,14 +49,16 @@ while True:
             delta = round(t1-t0,3)
 
             deltastream.append(str(delta))
-            if DEBUG:
-                sys.stdout.write(" D: {}\n".format(delta))
-                sys.stdout.flush()
+            # if DEBUG:
+            #     sys.stdout.write(" D: {}\n".format(delta))
+            #     sys.stdout.flush()
                 
             sys.stdout.write("0 = {} 1 = {}\r".format(max(deltastream),min(deltastream)))
             sys.stdout.flush()
 
-            if counter > 8:
+
+
+            if counter > 32:
                 break
             else:
                 counter += 1
@@ -63,10 +71,22 @@ while True:
         break
     except:
         DELAY += 0.1
-        time.sleep(0.1)
+        sleep(0.1)
 
 
 print("")
+
+
+deltastream = list(map(float,deltastream))
+jnb.fit(deltastream)
+try:
+    # sys.stdout.write("LABELS: {} \n".format(jnb.labels_))
+    sys.stdout.write("GROUPS: {} \n".format(jnb.groups_))
+    sys.stdout.write("INNER BREAKS: {} \n".format(jnb.inner_breaks_))
+    sys.stdout.flush()
+
+except:
+    sys.stdout.write("FAIL\n")
 
 print("DELAY = {} 1 = {}  0 = {}".format(DELAY,max(deltastream),min(deltastream)))
 

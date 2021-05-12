@@ -1,0 +1,13 @@
+Usage of ./cracksteg-linux:
+  -b string
+    	the mode to run as (default "B")
+  -il int
+    	the lower bound interval to check (default 1)
+  -iu int
+    	the upper bound interval to check (default 8)
+  -ol int
+    	the lower bound offset to check (default 108)
+  -ou int
+    	the upper bound offset to check (default 2048)
+  -w string
+    	the wrapper to read from (default "stegged-byte.bmp")

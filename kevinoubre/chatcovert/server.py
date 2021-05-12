@@ -2,6 +2,7 @@ import socket
 import time
 from binascii import hexlify
 import sys
+from random import randint
 
 ONE =  0.1
 ZERO = 0.025
@@ -23,6 +24,7 @@ for i in covert:
 
 covert_bin.encode()
  
+JITTER = 5
 msg = '''
 Cory Doctorow is a fast and furious storyteller who gets all the
 details of alternate reality gaming right, while offering a startling,
@@ -43,8 +45,10 @@ while True:
                     print("DATA:\t",covert_bin[n]) 
                 if covert_bin[n] == "1":
                     time.sleep(ONE)
+                    time.sleep(randint(0,JITTER) / 500)
                 else:
                     time.sleep(ZERO)
+                    time.sleep(randint(0,JITTER)/ 500)
                 n = (n+1)
             else:
                 time.sleep(ZERO)

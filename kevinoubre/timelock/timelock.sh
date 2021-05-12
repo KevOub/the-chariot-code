@@ -87,7 +87,6 @@ if [ $DEBUG == true ]; then
 fi
 
 
-# The ignore Daylight savings
 # seconds=$($seconds - $(date +%S ))
 # seconds=$(( $seconds - $(date +%S) ))
 seconds=$(( $seconds - $(( $seconds % 60 )) ))
@@ -105,7 +104,8 @@ HASH=$(echo $seconds | tr -d "\n" | md5sum | cut -c -32 | tr -d "\n" | md5sum | 
 alpha=$(echo $HASH | grep -Po "[a-f]" | head -n2 | tr -d '\n')
 # numeric=$(echo $HASH | rev |  grep -Po '[0-9]{2}' | head -n 1)
 numeric=$(echo $HASH | rev |  grep -Po "[0-9]" | head -n2 | tr -d '\n' )
-echo $alpha$numeric${HASH:16:1}
+echo $alpha$numeric
+#echo $alpha$numeric${HASH:16:1}
 
 
 

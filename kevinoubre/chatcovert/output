@@ -1,18 +1,5 @@
-Never trust an atom.  They make up everything.
-I'm not insensitive; I just don't care.
-There's only one thing I hate more than lying, and that's skimmed milk -- which is water that's lying about being milk.  -- Ron Swanson
-Beer is the answer, but I can't remember the question.
-Some ideas are so stupid that only intellectuals believe them. -- George Orwell
-Success is a journey, not a destination. -- Ben Sweetland
-80% of people don't know their percentages, and the other half don't give a damn.
-A conclusion is simply the place where you got tired of thinking.
-Logic is a system whereby one may go wrong with confidence. -- Charles Kettering
-Don't wait until you're on your deathbed to tell people how you really feel because you could be too weak to raise your middle finger.
-The world doesn't need more people with good grades.  The world needs people who see the really tough problems as puzzles and have the tenacity and creative capacity to solve them. -- Gever Tulley
-Don't accept your dog's admiration as conclusive evidence that you are wonderful.
-Men never do evil so completely and cheerfully as when they do it from religious conviction. -- Blaise Pascal
-A conclusion is simply the place where you got tired of thinking.
-The gene pool is in need of chlorine...badly.
-Never get into a pissing contest with a skunk.
-Don't try to teach your grandma to suck eggs.
-Don't wish it was easier, wish you were better.  Don't wish 
+0 = 0.025 1 = 0.0250 = 0.1 1 = 0.0250 = 0.1 1 = 0.0250 = 0.1 1 = 0.0250 = 0.106 1 = 0.0250 = 0.106 1 = 0.0250 = 0.108 1 = 0.0250 = 0.108 1 = 0.0250 = 0.108 1 = 0.0250 = 0.11 1 = 0.0250 = 0.11 1 = 0.0250 = 0.11 1 = 0.0250 = 0.11 1 = 0.0250 = 0.11 1 = 0.0250 = 0.11 1 = 0.0250 = 0.11 1 = 0.0250 = 0.11 1 = 0.0250 = 0.11 1 = 0.0250 = 0.11 1 = 0.0250 = 0.11 1 = 0.0250 = 0.11 1 = 0.0250 = 0.11 1 = 0.0250 = 0.111 1 = 0.0250 = 0.111 1 = 0.0250 = 0.111 1 = 0.0250 = 0.111 1 = 0.0250 = 0.111 1 = 0.0250 = 0.111 1 = 0.0250 = 0.111 1 = 0.0250 = 0.111 1 = 0.0250 = 0.111 1 = 0.0250 = 0.111 1 = 0.0250 = 0.111 1 = 0.0250 = 0.111 1 = 0.025
+GROUPS: [array([0.025, 0.027, 0.027, 0.025, 0.027]), array([0.029, 0.029, 0.031, 0.029]), array([0.035, 0.033, 0.033, 0.035, 0.035, 0.033, 0.033, 0.033, 0.033,
+       0.035]), array([0.1  , 0.102, 0.1  , 0.1  ]), array([0.106, 0.104, 0.105]), array([0.108, 0.11 , 0.108, 0.11 , 0.111, 0.11 , 0.11 , 0.11 ])] 
+INNER BREAKS: [0.027, 0.031, 0.035, 0.102, 0.106] 
+DELAY = 0 1 = 0.111  0 = 0.025

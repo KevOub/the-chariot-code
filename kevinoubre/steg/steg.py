@@ -189,7 +189,6 @@ class Steg():
             poker += self.interval
             output.append(b)
 
-    # TODO HAVE NOT NEEDED TO TEST IT
     def retrieveBitModeReversed(self):
         out = []
         poker = (len(self.wrapper) - self.offset)
