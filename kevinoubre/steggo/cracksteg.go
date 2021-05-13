@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 	"sync"
 	"unicode"
 
@@ -25,7 +27,7 @@ func main() {
 	var IGNORESEXTENSIONS = []string{".dbf"}
 
 	// CLI FLAGS
-	var wrapperFlag = flag.String("w", "stegged-byte.bmp", "the wrapper to read from")
+	var wrapperFlag = flag.String("w", "", "the wrapper to read from")
 	var modeFlag = flag.String("b", "B", "the mode to run as")
 
 	var upperOffsetFlag = flag.Int("ou", UPPERBOUNDOFFSET, "the upper bound offset to check")
@@ -33,6 +35,8 @@ func main() {
 
 	var upperIntervalFlag = flag.Int("iu", UPPERBOUNDINTERVAL, "the upper bound interval to check")
 	var lowerIntervalFlag = flag.Int("il", LOWERBOUNDINTERVAL, "the lower bound interval to check")
+
+	var newSentinel = flag.String("k", "", "the sentinel string to read from [MUST BE A CSV such as 0,255,0,0,255,0]")
 
 	flag.Parse()
 
@@ -45,12 +49,28 @@ func main() {
 	upperInterval := *upperIntervalFlag
 	lowerInterval := *lowerIntervalFlag
 
+	sentinelPath := *newSentinel
+
 	/*
 		DISPLAY PROUDLY NOW THE FLAG DATA
 	*/
+	SENTINEL := []byte{0x0, 0xff, 0x0, 0x0, 0xff, 0x0}
+	var output []byte
+
+	if sentinelPath != "" {
+		for _, r := range strings.Split(sentinelPath, ",") {
+			tmp, _ := strconv.Atoi(r)
+			output = append(output, byte(tmp))
+		}
+
+		SENTINEL = output
+		//
+	}
 
 	fmt.Printf("CRACKING\t%s\t\n", WRAPPERNAME)
 	fmt.Printf("MODE\t\t%s\t\n", MODE)
+
+	fmt.Printf("\nSENTINEL\t%v\t\n", SENTINEL)
 
 	fmt.Printf("OFFSET\t\t%d:%d \n", lowerOffset, upperOffset)
 	fmt.Printf("INTERVAL\t%d:%d \n", lowerInterval, upperInterval)
@@ -60,7 +80,6 @@ func main() {
 	// fmt.Printf("%d \n", (upperOffset-lowerOffset)*(upperInterval-lowerInterval))
 
 	// fmt.Printf("interval %d offset %d\n", interval, offset)
-	SENTINEL := []byte{0x0, 0xff, 0x0, 0x0, 0xff, 0x0}
 
 	// Reads file
 	var err error
@@ -116,7 +135,7 @@ func main() {
 							if !contains(IGNORESEXTENSIONS, mime.Extension()) {
 
 								fmt.Printf("FOUND:\tINTERVAL %d\tOFFSET %d\n", j, i)
-								name := fmt.Sprintf("file.o.%d.i.%d", i, j)
+								name := fmt.Sprintf("file.o.%d.i.%d%s", i, j, mime.Extension())
 								fmt.Printf("\t%s\n", name)
 								// Saves the bytes to the disk
 								StoreFile(output, mime.Extension(), name, MODE)
@@ -171,16 +190,34 @@ func MakeDir(thingy string) {
 
 }
 
+// func ReadSentinel(path string) []byte {
+
+// 	csvFile, _ := os.Open(path)
+// 	reader := csv.NewReader(bufio.NewReader(csvFile))
+// 	line, error := reader.ReadAll()
+// 	var output []byte
+
+// 	if error != nil {
+// 		log.Fatal(error)
+// 	}
+
+// 	for _, r := range line[0] {
+// 		tmp, _ := strconv.Atoi(r)
+// 		// fmt.Printf("%v \n", tmp)
+// 		output = append(output, byte(tmp))
+
+// 	}
+// 	return output
+
+// }
+
 func StoreFile(data []byte, extension string, name string, mode string) {
 	outputDir := fmt.Sprintf("output/%s/", mode)
 
 	MakeDir(outputDir)
 
-	f, err := os.Create(outputDir + name + extension)
-
-	if err != nil {
-		log.Fatal(err)
-	}
+	f, err := os.Create(outputDir + name)
+	// err := ioutil.WriteFile(outputDir+name, data, 0644)
 
 	defer f.Close()
 
