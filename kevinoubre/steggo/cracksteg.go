@@ -116,10 +116,10 @@ func main() {
 							if !contains(IGNORESEXTENSIONS, mime.Extension()) {
 
 								fmt.Printf("FOUND:\tINTERVAL %d\tOFFSET %d\n", j, i)
-								name := fmt.Sprintf("file.o.%d.i.%d%s", i, j, mime.Extension())
+								name := fmt.Sprintf("file.o.%d.i.%d", i, j)
 								fmt.Printf("\t%s\n", name)
 								// Saves the bytes to the disk
-								StoreFile(output, mime.Extension(), name)
+								StoreFile(output, mime.Extension(), name, MODE)
 
 							}
 
@@ -143,7 +143,7 @@ func main() {
 
 	fmt.Println(metadata)
 	fmt.Print(stringOutput)
-	StoreFile([]byte(stringOutput), ".txt", "beststring")
+	StoreFile([]byte(stringOutput), ".txt", "beststring", MODE)
 
 }
 
@@ -157,8 +157,26 @@ func contains(s []string, str string) bool {
 	return false
 }
 
-func StoreFile(data []byte, extension string, name string) {
-	f, err := os.Create("output/" + name + extension)
+func MakeDir(thingy string) {
+
+	_, err := os.Stat(thingy)
+
+	if os.IsNotExist(err) {
+		errDir := os.MkdirAll(thingy, 0755)
+		if errDir != nil {
+			log.Fatal(err)
+		}
+
+	}
+
+}
+
+func StoreFile(data []byte, extension string, name string, mode string) {
+	outputDir := fmt.Sprintf("output/%s/", mode)
+
+	MakeDir(outputDir)
+
+	f, err := os.Create(outputDir + name + extension)
 
 	if err != nil {
 		log.Fatal(err)
