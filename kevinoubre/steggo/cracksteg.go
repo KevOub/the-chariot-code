@@ -37,6 +37,7 @@ func main() {
 	var lowerIntervalFlag = flag.Int("il", LOWERBOUNDINTERVAL, "the lower bound interval to check")
 
 	var newSentinel = flag.String("k", "", "the sentinel string to read from [MUST BE A CSV such as 0,255,0,0,255,0]")
+	var reverseDirection = flag.Bool("d", false, "Read left-to-right (default) or right to left")
 
 	flag.Parse()
 
@@ -50,6 +51,7 @@ func main() {
 	lowerInterval := *lowerIntervalFlag
 
 	sentinelPath := *newSentinel
+	reverseStatus := *reverseDirection
 
 	/*
 		DISPLAY PROUDLY NOW THE FLAG DATA
@@ -107,9 +109,9 @@ func main() {
 
 				// what mode is the system running as
 				if MODE == "B" {
-					output = RetrieveByteMode(data, SENTINEL, j, i)
+					output = RetrieveByteMode(data, SENTINEL, j, i, reverseStatus)
 				} else if MODE == "b" {
-					output = RetrieveBitMode(data, SENTINEL, j, i)
+					output = RetrieveBitMode(data, SENTINEL, j, i, reverseStatus)
 				}
 
 				// if we found anything
@@ -230,20 +232,32 @@ func StoreFile(data []byte, extension string, name string, mode string) {
 }
 
 // RetrieveBitMode is straight from the PDF no explanation needed
-func RetrieveBitMode(wrapper []byte, SENTINEL []byte, interval int, offset int) []byte {
+func RetrieveBitMode(wrapper []byte, SENTINEL []byte, interval int, offset int, reverse bool) []byte {
 	// i := 0
 	var b byte
-	poker := offset
+	var poker int
+	if reverse {
+		poker = len(wrapper) - 1
+	} else {
+		poker = offset
+	}
 	stopcounter := 0
 	output := make([]byte, 0)
 
 	for {
 		b = 0
 
-		if poker >= len(wrapper) {
-			break
-		}
+		if reverse {
+			if poker < offset {
+				break
+			}
 
+		} else {
+			if poker >= len(wrapper) {
+				break
+			}
+
+		}
 		for i := 0; i < 8; i++ {
 			if poker < len(wrapper) {
 				b = b | (wrapper[poker] & 0b0000001)
@@ -275,9 +289,14 @@ func RetrieveBitMode(wrapper []byte, SENTINEL []byte, interval int, offset int) 
 }
 
 // RetrieveByteMode is straight from the PDF no explanation needed
-func RetrieveByteMode(wrapper []byte, SENTINEL []byte, interval int, offset int) []byte {
+func RetrieveByteMode(wrapper []byte, SENTINEL []byte, interval int, offset int, reverse bool) []byte {
 	i := 0
-	poker := offset
+	var poker int
+	if reverse {
+		poker = len(wrapper) - 1
+	} else {
+		poker = offset
+	}
 	stopcounter := 0
 
 	// const SIZE = 1048576 // 2^20 b/c math.Pow is float aka not perfect
@@ -285,9 +304,18 @@ func RetrieveByteMode(wrapper []byte, SENTINEL []byte, interval int, offset int)
 	output := make([]byte, 0)
 
 	for {
-		if poker >= len(wrapper) {
-			break
+		if reverse {
+			if poker < offset {
+				break
+			}
+
+		} else {
+			if poker >= len(wrapper) {
+				break
+			}
+
 		}
+
 		b := wrapper[poker]
 
 		if b == SENTINEL[stopcounter] {
@@ -302,7 +330,12 @@ func RetrieveByteMode(wrapper []byte, SENTINEL []byte, interval int, offset int)
 
 		// break out
 
-		poker += interval
+		if reverse {
+			poker -= interval
+		} else {
+			poker += interval
+		}
+
 		output = append(output, b)
 		i++
 	}
